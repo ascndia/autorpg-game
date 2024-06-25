@@ -4,7 +4,7 @@
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
   "type": "module",
   "engines": {
-    "node": ">= 20.9 < 21"
+    "node": ">= 20.9"
   },
   "devDependencies": {
     "@types/jest": "~29.5",
@@ -36,6 +36,8 @@
   "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.5",
     "tslib": "~2.6"
   },
   "volta": {
