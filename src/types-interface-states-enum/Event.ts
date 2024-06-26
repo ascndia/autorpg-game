@@ -9,6 +9,8 @@ export interface IEvent {
   type: EVENT_TYPE;
 }
 
+export interface BattleEngineStartEvent extends IEvent {}
+
 export interface InfoEvent extends IEvent {
   text: string;
 }
@@ -17,8 +19,14 @@ export interface RoundUpdateEvent extends InfoEvent {
   round: number;
 }
 
-export interface CurrentHeroUpdateEvent extends InfoEvent {
+export interface CurrentHeroTurnUpdateEvent extends InfoEvent {
   hero: Base;
+}
+
+export interface CurrentHeroTurnEndedEvent extends InfoEvent {}
+
+export interface TargetHeroesSetEvent extends InfoEvent {
+  target: Base[];
 }
 
 export interface AttackEvent extends IEvent {
@@ -36,5 +44,8 @@ export enum EVENT_TYPE {
   SKILL,
   INFO,
   ROUND_UPDATE,
-  CURR_HERO_UPDATE,
+  CURR_HERO_TURN_UPDATE,
+  CURR_HERO_TURN_ENDED,
+  TARGET_HEROES_SET,
+  BATTLE_ENGINE_START,
 }

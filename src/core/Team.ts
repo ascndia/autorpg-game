@@ -16,20 +16,32 @@ export default class Team {
     ];
   }
   private members: [Slot, Slot, Slot, Slot, Slot, Slot, Slot, Slot, Slot, Slot];
-  public addMembers(members: Base[]) {
-    members.forEach((member) => {
-      this.members.push(member);
-    });
-  }
+
   public addMember(member: Base, index?: number) {
     if (index) {
       this.members[index] = member;
     } else {
+      this.members[this.getEmptySpot()] = member;
     }
   }
+
+  public getEmptySpot(): number {
+    let index: number = 0;
+    for (const slot in this.members) {
+      if (slot == undefined) {
+        return index;
+      } else {
+        index++;
+      }
+    }
+    return 0;
+  }
+
   public assignTeam(id: 1 | 2) {
     this.members.forEach((hero) => {
-      hero.teamId = id;
+      if (hero !== undefined) {
+        hero.teamId = id;
+      }
     });
   }
   public isLose(): boolean {
@@ -40,9 +52,26 @@ export default class Team {
     }
     return true;
   }
-  public getMembers() {
+  public getMembers(): Slot[] {
     return this.members;
+  }
+
+  public getHeroes() {
+    return this.filterEmpty(this.getMembers());
+  }
+
+  public filterEmpty(members: Base[]) {
+    return members.filter((member) => {
+      return member !== undefined;
+    });
+  }
+
+  public getIndex(index: number) {
+    if (this.members[index] == undefined) {
+      return undefined;
+    }
+    return this.members[index];
   }
 }
 
-type Slot = Base | undefined;
+type Slot = undefined | Base;

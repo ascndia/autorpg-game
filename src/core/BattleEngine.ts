@@ -1,18 +1,23 @@
 import Base from '../hero/Base.js';
 import Team from './Team.js';
 import {
-  CurrentHeroUpdateEvent,
+  BattleEngineStartEvent,
+  CurrentHeroTurnEndedEvent,
+  CurrentHeroTurnUpdateEvent,
   EVENT_TYPE,
   IEvent,
   RoundUpdateEvent,
+  TargetHeroesSetEvent,
 } from '../types-interface-states-enum/Event.js';
 import { BattleEventHandler } from './handler/BattleEventHandler.js';
 import GameEngine from './GameEngine.js';
+import { ActionHandler } from './handler/ActionHandler.js';
 
 export default class BattleEngine {
   constructor(GE: GameEngine) {
     this.GameEngine = GE;
-    this.Handler = new BattleEventHandler(this);
+    this.EventHandler = new BattleEventHandler(this);
+    this.ActionHandler = new ActionHandler(this);
     this.GameEngine;
   }
 
@@ -26,10 +31,16 @@ export default class BattleEngine {
   private GameEngine: GameEngine;
   public team1: Team;
   public team2: Team;
-  private Handler: BattleEventHandler;
+  private EventHandler: BattleEventHandler;
+  private ActionHandler: ActionHandler;
 
   private Init() {
     this.assignTeamId();
+    this.GameEngine.sendEvent([
+      {
+        type: EVENT_TYPE.BATTLE_ENGINE_START,
+      } as BattleEngineStartEvent,
+    ]);
   }
 
   public start() {
@@ -37,8 +48,8 @@ export default class BattleEngine {
     this.loopBattle();
   }
 
-  public getHandler() {
-    return this.Handler;
+  public getEventHandler() {
+    return this.EventHandler;
   }
 
   private async loopBattle() {
@@ -48,20 +59,45 @@ export default class BattleEngine {
       this.sendRound(round);
       while (initial.length !== 0) {
         const curr: Base = this.sortFastest(initial)[0];
-        this.sendCurrentHero(curr);
-        const events: IEvent[] = curr.update();
-        this.GameEngine.sendEvent(events);
+        this.sendCurrentHeroTurn(curr);
+        await delay(1000);
+        await this.ActionHandler.handle(curr.update());
+        this.sendCurrentHeroTurnEnded(curr);
         initial.shift();
-        await delay(2000);
+        await delay(1000);
       }
       round++;
     }
   }
-  private sendCurrentHero(hero: Base) {
-    const event: CurrentHeroUpdateEvent = {
-      type: EVENT_TYPE.CURR_HERO_UPDATE,
+  public delay(ms: number) {
+    return new Promise((res) => setTimeout(res, ms));
+  }
+  public sendCurrentHeroTurn(hero: Base) {
+    const event: CurrentHeroTurnUpdateEvent = {
+      type: EVENT_TYPE.CURR_HERO_TURN_UPDATE,
       text: `${hero.name} turn`,
       hero: hero,
+    };
+    this.GameEngine.sendEvent([event]);
+  }
+
+  public sendEvents(events: IEvent[]) {
+    return this.GameEngine.sendEvent(events);
+  }
+
+  public sendTargetHeroes(heroes: Base[]) {
+    const event: TargetHeroesSetEvent = {
+      type: EVENT_TYPE.TARGET_HEROES_SET,
+      target: heroes,
+      text: `target : ${heroes.map((hero) => hero.name).join(' ')}`,
+    };
+    this.GameEngine.sendEvent([event]);
+  }
+
+  private sendCurrentHeroTurnEnded(hero: Base) {
+    const event: CurrentHeroTurnEndedEvent = {
+      type: EVENT_TYPE.CURR_HERO_TURN_ENDED,
+      text: `${hero.name} turn ended`,
     };
     this.GameEngine.sendEvent([event]);
   }
@@ -92,8 +128,8 @@ export default class BattleEngine {
   private sortInitial(): Base[] {
     // mock calculation
     const initial: Base[] = [
-      ...this.team1.getMembers(),
-      ...this.team2.getMembers(),
+      ...this.team1.getHeroes(),
+      ...this.team2.getHeroes(),
     ];
     return this.sortFastest(initial);
   }
@@ -102,25 +138,33 @@ export default class BattleEngine {
     if (id === 1) {
       return this.team2;
     } else if (id === 2) {
-      return this.team2;
+      return this.team1;
     } else {
       throw new Error('no team id');
     }
   }
 
-  public resolveTarget(type: number, team: Team): Base[] {
+  public getTeam(id: 1 | 2) {
+    if (id === 1) {
+      return this.team1;
+    } else {
+      return this.team2;
+    }
+  }
+
+  static resolveTarget(type: number, team: Team): Base[] {
     switch (type) {
       case 1:
-        return team.getMembers();
+        return team.getHeroes();
 
       default:
-        return team.getMembers();
+        return team.getHeroes();
     }
   }
 
   private sortFastest(heroes: Base[]): Base[] {
     // mock calculation
-    return heroes;
+    return heroes.sort((a, b) => b.attribute.speed - a.attribute.speed);
   }
 }
 

@@ -1,28 +1,26 @@
 import Attributes from '../attribute/Attributes.js';
 import {
-  InfoEvent,
-  EVENT_TYPE,
-  AttackEvent,
-} from '../types-interface-states-enum/Event.js';
+  ACTION_TYPE,
+  AttackAction,
+} from '../types-interface-states-enum/Action.js';
 import Base from './Base.js';
 
 export default class Selena extends Base {
   constructor() {
     super('Selena');
-    this.attribute = new Attributes({ health: 1000 });
+    this.attribute = new Attributes({ health: 1000, speed: 500 });
   }
 
   public attack() {
-    const displayUIMessageEvent: InfoEvent = {
-      type: EVENT_TYPE.INFO,
-      text: `selena launch attack with damage 200`,
-    };
-    const attackEvent: AttackEvent = {
-      type: EVENT_TYPE.ATTACK,
+    const action: AttackAction = {
+      type: ACTION_TYPE.ATTACK,
+      text: `Selena launch attack with damage 500`,
       caster: this,
-      damage: 200,
+      damage: 500,
+      targetType: 1,
+      events: [],
     };
-    return [displayUIMessageEvent, attackEvent];
+    return [action];
   }
 
   public update() {

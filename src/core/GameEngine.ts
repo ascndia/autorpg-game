@@ -13,7 +13,7 @@ export default class GameEngine {
     this.EventEngine = new EventEngine(this);
     this.UIEngine = new UIEngine(this);
 
-    this.EventEngine.register(this.BattleEngine.getHandler());
+    this.EventEngine.register(this.BattleEngine.getEventHandler());
     this.EventEngine.register(this.UIEngine.getHandler());
   }
 
@@ -28,5 +28,13 @@ export default class GameEngine {
 
   public sendEvent(events: IEvent[]) {
     this.EventEngine.sendEvent(events);
+  }
+
+  public getTeam(id: 1 | 2) {
+    if (id === 1) {
+      return this.BattleEngine.team1;
+    } else {
+      return this.BattleEngine.team2;
+    }
   }
 }

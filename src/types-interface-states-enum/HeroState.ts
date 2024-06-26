@@ -1,10 +1,10 @@
-import { IEvent } from './Event.js';
+import { IAction } from './Action.js';
 import { IHeroInstance } from './HeroInstance.js';
 
 export type HeroStates = HeroDeadState | HeroIdleState;
 
 export interface IHeroState {
-  update: (h: IHeroInstance) => IEvent[];
+  update: (h: IHeroInstance) => IAction[];
   type: string;
 }
 
@@ -17,7 +17,7 @@ export class HeroIdleState implements IHeroState {
     this.type = 'IDLE';
   }
   public update() {
-    return [...(this.hero.attack() as IEvent[])];
+    return [...(this.hero.attack() as IAction[])];
   }
 }
 
@@ -30,7 +30,7 @@ export class HeroDeadState implements IHeroState {
     this.type = 'DEAD';
   }
   public update() {
-    return [...(this.hero.attack() as IEvent[])];
+    return [...(this.hero.attack() as IAction[])];
     // this.hero.update();
   }
 }

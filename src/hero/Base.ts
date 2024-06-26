@@ -1,5 +1,5 @@
 import Attributes from '../attribute/Attributes.js';
-import { IEvent } from '../types-interface-states-enum/Event.js';
+import { IAction } from '../types-interface-states-enum/Action.js';
 import { IHeroInstance } from '../types-interface-states-enum/HeroInstance.js';
 import {
   HeroIdleState,
@@ -14,15 +14,16 @@ export default abstract class Base implements IHeroInstance {
   }
   public teamId: undefined | 1 | 2;
   public name: string;
-  protected attribute: Attributes;
+  public attribute: Attributes;
   protected state: HeroStates;
 
   public getState(): HeroStates {
     return this.state;
   }
-  public take({ damage }: { damage: number }) {
+  public take({ damage }: { damage: number }): IAction[] {
     this.attribute.health -= damage;
+    return [];
   }
-  public abstract update(): IEvent[];
-  public abstract attack(): IEvent[];
+  public abstract update(): IAction[];
+  public abstract attack(): IAction[];
 }

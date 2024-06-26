@@ -1,27 +1,25 @@
 import Attributes from '../attribute/Attributes.js';
 import {
-  InfoEvent,
-  EVENT_TYPE,
-  AttackEvent,
-} from '../types-interface-states-enum/Event.js';
+  ACTION_TYPE,
+  AttackAction,
+} from '../types-interface-states-enum/Action.js';
 import Base from './Base.js';
 
 export default class Minamoto extends Base {
   constructor() {
     super('Minamoto');
-    this.attribute = new Attributes({ health: 1000 });
+    this.attribute = new Attributes({ health: 2000 });
   }
   public attack() {
-    const displayUIMessageEvent: InfoEvent = {
-      type: EVENT_TYPE.INFO,
-      text: `minamoto launch attack with damage 350`,
-    };
-    const event: AttackEvent = {
-      type: EVENT_TYPE.ATTACK,
+    const action: AttackAction = {
+      type: ACTION_TYPE.ATTACK,
+      text: `Minamoto launch attack with damage 150`,
       caster: this,
-      damage: 100,
+      damage: 150,
+      targetType: 1,
+      events: [],
     };
-    return [displayUIMessageEvent, event];
+    return [action];
   }
 
   public update() {

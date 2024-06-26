@@ -1,9 +1,9 @@
-import { IEvent } from './Event.js';
+import { IAction } from './Action.js';
 
 export interface IHeroInstance {
   teamId: undefined | 1 | 2;
   name: string;
-  update: () => IEvent[];
-  attack: () => IEvent[];
+  update: () => IAction[];
+  attack: () => IAction[];
   take: (any) => void;
 }
