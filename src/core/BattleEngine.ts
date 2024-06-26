@@ -12,20 +12,22 @@ import {
 import { BattleEventHandler } from './handler/BattleEventHandler.js';
 import GameEngine from './GameEngine.js';
 import { ActionHandler } from './handler/ActionHandler.js';
+import TargetResolver from './TargetResolver.js';
 
 export default class BattleEngine {
   constructor(GE: GameEngine) {
     this.GameEngine = GE;
     this.EventHandler = new BattleEventHandler(this);
     this.ActionHandler = new ActionHandler(this);
+    this.TargetResolver = new TargetResolver(this);
     this.GameEngine;
   }
 
   public getHero(teamId: 1 | 2, order: number) {
     if (teamId == 1) {
-      return this.team1.getMembers()[order];
+      return this.team1.getAllSlot()[order];
     } else {
-      return this.team2.getMembers()[order];
+      return this.team2.getAllSlot()[order];
     }
   }
   private GameEngine: GameEngine;
@@ -33,9 +35,11 @@ export default class BattleEngine {
   public team2: Team;
   private EventHandler: BattleEventHandler;
   private ActionHandler: ActionHandler;
+  public TargetResolver: TargetResolver;
 
   private Init() {
     this.assignTeamId();
+    this.TargetResolver.Init();
     this.GameEngine.sendEvent([
       {
         type: EVENT_TYPE.BATTLE_ENGINE_START,
@@ -55,10 +59,10 @@ export default class BattleEngine {
   private async loopBattle() {
     let round = 1;
     while (!this.isBattleEnd()) {
-      const initial = this.sortInitial();
+      const initial = this.TargetResolver.sortInitial();
       this.sendRound(round);
       while (initial.length !== 0) {
-        const curr: Base = this.sortFastest(initial)[0];
+        const curr: Base = TargetResolver.sortByHighestSpeed(initial)[0];
         this.sendCurrentHeroTurn(curr);
         await delay(1000);
         await this.ActionHandler.handle(curr.update());
@@ -125,15 +129,6 @@ export default class BattleEngine {
     this.team2.assignTeam(2);
   }
 
-  private sortInitial(): Base[] {
-    // mock calculation
-    const initial: Base[] = [
-      ...this.team1.getHeroes(),
-      ...this.team2.getHeroes(),
-    ];
-    return this.sortFastest(initial);
-  }
-
   public getEnemyTeam(id: 1 | 2) {
     if (id === 1) {
       return this.team2;
@@ -150,21 +145,6 @@ export default class BattleEngine {
     } else {
       return this.team2;
     }
-  }
-
-  static resolveTarget(type: number, team: Team): Base[] {
-    switch (type) {
-      case 1:
-        return team.getHeroes();
-
-      default:
-        return team.getHeroes();
-    }
-  }
-
-  private sortFastest(heroes: Base[]): Base[] {
-    // mock calculation
-    return heroes.sort((a, b) => b.attribute.speed - a.attribute.speed);
   }
 }
 

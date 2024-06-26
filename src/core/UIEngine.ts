@@ -93,11 +93,14 @@ export default class UIEngine {
     } else {
       team = this.TEAM2;
     }
-    const hero = team.getIndex(order);
+    const hero = team.getByIndex(order);
     if (hero === undefined) {
       return '-';
     }
     let text = hero.name;
+    if (hero.getState().type == 'DEAD') {
+      text = chalk.grey(text);
+    }
     if (hero === this.CURRENT_HERO) {
       text = chalk.blue(text);
     }
@@ -164,7 +167,7 @@ export default class UIEngine {
     } else {
       team = this.TEAM2;
     }
-    const hero = team.getIndex(order);
+    const hero = team.getByIndex(order);
     if (hero == undefined) {
       return [{ colSpan: 5, content: '' }];
     } else {

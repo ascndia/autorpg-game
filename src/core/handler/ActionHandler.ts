@@ -17,14 +17,13 @@ export class ActionHandler {
   private BE: BattleEngine;
 
   private async attackHandler({
-    targetType,
-    caster,
+    target,
     damage,
     text,
   }: AttackAction): Promise<void> {
-    const enemyTeam = this.BE.getEnemyTeam(caster.teamId);
-    const targets = BattleEngine.resolveTarget(targetType, enemyTeam);
-    if (targets) {
+    const targets = this.BE.TargetResolver.resolve(target);
+    console.log(targets);
+    if (targets.length !== 0) {
       this.BE.sendEvents([
         {
           type: EVENT_TYPE.TARGET_HEROES_SET,

@@ -8,15 +8,21 @@ import Base from './Base.js';
 export default class Minamoto extends Base {
   constructor() {
     super('Minamoto');
-    this.attribute = new Attributes({ health: 2000 });
+    this.attribute = new Attributes({ health: 1000 });
   }
   public attack() {
     const action: AttackAction = {
       type: ACTION_TYPE.ATTACK,
-      text: `Minamoto launch attack with damage 150`,
+      text: `Minamoto launch attack with damage 250`,
       caster: this,
-      damage: 150,
-      targetType: 1,
+      damage: 250,
+      target: {
+        teamId: this.teamId,
+        subject: 'enemy',
+        type: 'all',
+        number: 0,
+        position: 'front',
+      },
       events: [],
     };
     return [action];

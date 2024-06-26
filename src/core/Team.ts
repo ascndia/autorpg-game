@@ -14,9 +14,19 @@ export default class Team {
       undefined,
       undefined,
     ];
+    this.layout = {
+      front: [0, 1, 2],
+      mid: [3, 4, 5, 6],
+      back: [7, 8, 9],
+    };
+    this.layout;
   }
   private members: [Slot, Slot, Slot, Slot, Slot, Slot, Slot, Slot, Slot, Slot];
-
+  private layout: {
+    front: [number, number, number];
+    mid: [number, number, number, number];
+    back: [number, number, number];
+  };
   public addMember(member: Base, index?: number) {
     if (index) {
       this.members[index] = member;
@@ -44,34 +54,46 @@ export default class Team {
       }
     });
   }
+
   public isLose(): boolean {
-    for (const hero of this.members) {
+    const heroes = this.filterEmpty(this.members);
+    for (const hero of heroes) {
       if (hero.getState().type !== 'DEAD') {
         return false;
       }
     }
     return true;
   }
-  public getMembers(): Slot[] {
-    return this.members;
-  }
-
-  public getHeroes() {
-    return this.filterEmpty(this.getMembers());
-  }
-
-  public filterEmpty(members: Base[]) {
+  private filterEmpty(members: Base[]) {
     return members.filter((member) => {
       return member !== undefined;
     });
   }
 
-  public getIndex(index: number) {
-    if (this.members[index] == undefined) {
-      return undefined;
+  public getAllSlot(): Slot[] {
+    return this.members;
+  }
+
+  public getAllHero() {
+    return this.getAllSlot();
+  }
+
+  public getHeroesByLayout(layout: LAYOUT_TYPE): Base[] {
+    return this.layout[layout].map((index) => this.members[index]);
+  }
+
+  public getHeroesByCombinedLayouts(layouts: LAYOUT_TYPE[]): Base[] {
+    let combinedHeroes: Base[] = [];
+    for (const layout of layouts) {
+      combinedHeroes = combinedHeroes.concat(this.getHeroesByLayout(layout));
     }
+    return combinedHeroes;
+  }
+
+  public getByIndex(index: number): Slot {
     return this.members[index];
   }
 }
 
 type Slot = undefined | Base;
+type LAYOUT_TYPE = 'front' | 'mid' | 'back';

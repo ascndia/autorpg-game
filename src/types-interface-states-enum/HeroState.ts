@@ -28,9 +28,10 @@ export class HeroDeadState implements IHeroState {
   constructor(h: IHeroInstance) {
     this.hero = h;
     this.type = 'DEAD';
+    this.hero;
   }
   public update() {
-    return [...(this.hero.attack() as IAction[])];
+    return [];
     // this.hero.update();
   }
 }

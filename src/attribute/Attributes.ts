@@ -3,9 +3,11 @@ export default class Attributes implements IAttribute {
   public shield: number;
   public energy: number;
   public speed: number;
+  public attack: number;
 
   constructor({
     health = 1000,
+    attack = 200,
     shield = 0,
     energy = 50,
     speed = 300,
@@ -14,6 +16,7 @@ export default class Attributes implements IAttribute {
     this.shield = shield;
     this.energy = energy;
     this.speed = speed;
+    this.attack = attack;
   }
 }
 
@@ -22,6 +25,7 @@ export interface IAttribute {
   shield: number;
   energy: number;
   speed: number;
+  attack: number;
 }
 
 export interface AttributeBuilder {
@@ -29,4 +33,5 @@ export interface AttributeBuilder {
   shield?: number;
   energy?: number;
   speed?: number;
+  attack?: number;
 }

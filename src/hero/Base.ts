@@ -2,6 +2,7 @@ import Attributes from '../attribute/Attributes.js';
 import { IAction } from '../types-interface-states-enum/Action.js';
 import { IHeroInstance } from '../types-interface-states-enum/HeroInstance.js';
 import {
+  HeroDeadState,
   HeroIdleState,
   HeroStates,
 } from '../types-interface-states-enum/HeroState.js';
@@ -22,6 +23,9 @@ export default abstract class Base implements IHeroInstance {
   }
   public take({ damage }: { damage: number }): IAction[] {
     this.attribute.health -= damage;
+    if (this.attribute.health <= 0) {
+      this.state = new HeroDeadState(this);
+    }
     return [];
   }
   public abstract update(): IAction[];

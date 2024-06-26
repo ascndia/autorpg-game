@@ -1,4 +1,5 @@
 import Base from '../hero/Base.js';
+import { ITarget } from './AttackAction.js';
 import { IEvent } from './Event.js';
 
 export interface IAction {
@@ -7,10 +8,12 @@ export interface IAction {
   events?: IEvent[];
 }
 
-export interface AttackAction extends IAction {
+export interface ITargetAction extends IAction {
+  target: ITarget;
+}
+export interface AttackAction extends ITargetAction {
   damage: number;
   caster: Base;
-  targetType: number;
 }
 
 export enum ACTION_TYPE {
