@@ -1,53 +1,43 @@
+import { EventEmitter } from 'events';
 import {
   ACTION_TYPE,
   AttackAction,
   IAction,
 } from '../../types-interface-states-enum/Action.js';
-import {
-  EVENT_TYPE,
-  InfoEvent,
-  TargetHeroesSetEvent,
-} from '../../types-interface-states-enum/Event.js';
-import BattleEngine from '../BattleEngine.js';
+import Resolver from '../TargetResolver.js';
+import Team from '../Team.js';
+import { delay } from '../../utils.js';
+import { TICK } from '../../constant.js';
 
 export class ActionHandler {
-  constructor(BE: BattleEngine) {
-    this.BE = BE;
+  constructor(team1: Team, team2: Team, Emitter: EventEmitter) {
+    this.Resolver = new Resolver(team1, team2);
+    this.Emitter = Emitter;
   }
-  private BE: BattleEngine;
+  private Resolver: Resolver;
+  private Emitter: EventEmitter;
 
   private async attackHandler({
     target,
     damage,
-    text,
+    caster,
   }: AttackAction): Promise<void> {
-    const targets = this.BE.TargetResolver.resolve(target);
-    console.log(targets);
-    if (targets.length !== 0) {
-      this.BE.sendEvents([
-        {
-          type: EVENT_TYPE.TARGET_HEROES_SET,
-          target: targets,
-          text: `Targets: [${targets.map((target) => target.name).join(' ')}]`,
-        } as TargetHeroesSetEvent,
-      ]);
-      await this.BE.delay(1000);
-    }
-    if (text) {
-      this.BE.sendEvents([
-        {
-          type: EVENT_TYPE.INFO,
-          text,
-        } as InfoEvent,
-      ]);
-      await this.BE.delay(1000);
-    }
+    this.Emitter.emit('battle:turn:calculating:target');
+    const targets = this.Resolver.resolve(target);
 
-    targets.forEach((hero) => {
+    if (targets.length !== 0) {
+      this.Emitter.emit('battle:turn:calculated:target', targets);
+    }
+    for (const target of targets) {
+      this.Emitter.emit('info', `${caster.name} Attacking ${target.name}`);
+      await delay(TICK);
+    }
+    for (const target of targets) {
       const payload = { damage };
-      this.handle(hero.take(payload));
-    });
+      this.handle(target.take(payload));
+    }
   }
+
   public handle(actions: IAction[]): void | Promise<void> {
     for (const action of actions) {
       switch (action.type) {

@@ -5,23 +5,24 @@ import {
 } from '../types-interface-states-enum/Action.js';
 import Base from './Base.js';
 
-export default class Minamoto extends Base {
+export default class Alice extends Base {
   constructor() {
-    super('Minamoto');
-    this.attribute = new Attributes({ health: 1000 });
+    super('Alice');
+    this.attribute = new Attributes({ health: 1200, speed: 300 });
   }
+
   public attack() {
     const action: AttackAction = {
       type: ACTION_TYPE.ATTACK,
-      text: `Minamoto launch attack with damage 250`,
+      text: `Alice launch attack with damage 200`,
       caster: this,
-      damage: 250,
+      damage: 200,
       target: {
         teamId: this.teamId,
         subject: 'enemy',
         type: 'all',
         number: 0,
-        position: 'front',
+        position: 'all',
       },
       events: [],
     };

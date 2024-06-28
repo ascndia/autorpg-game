@@ -3,30 +3,26 @@ import {
   ACTION_TYPE,
   AttackAction,
 } from '../types-interface-states-enum/Action.js';
-
 import Base from './Base.js';
 
-export default class Geester extends Base {
+export default class Belerick extends Base {
   constructor() {
-    super('Geester');
-    this.attribute = new Attributes({ health: 800, speed: 340 });
+    super('Belerick');
+    this.attribute = new Attributes({ health: 3500, speed: 290 });
   }
+
   public attack() {
     const action: AttackAction = {
       type: ACTION_TYPE.ATTACK,
-      text: `Geester launch attack with damage 500`,
+      text: `Belerick launch attack with damage 250`,
       caster: this,
-      damage: 500,
+      damage: 250,
       target: {
         teamId: this.teamId,
         subject: 'enemy',
-        type: 'default',
+        type: 'random',
         number: 1,
-        position: 'all',
-        sortType: {
-          sortBy: 'health',
-          sortDirection: 'ASC',
-        },
+        position: 'front',
       },
       events: [],
     };

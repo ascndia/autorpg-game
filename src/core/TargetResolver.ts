@@ -1,18 +1,14 @@
 import Base from '../hero/Base.js';
 import { ITarget } from '../types-interface-states-enum/AttackAction.js';
 import { shuffleArray } from '../utils.js';
-import BattleEngine from './BattleEngine.js';
 import Team from './Team.js';
 
 export default class TargetResolver {
-  constructor(BE: BattleEngine) {
-    this.BE = BE;
+  constructor(team1: Team, team2: Team) {
+    this.team1 = team1;
+    this.team2 = team2;
   }
-  public Init() {
-    this.team1 = this.BE.team1;
-    this.team2 = this.BE.team2;
-  }
-  private BE: BattleEngine;
+
   private team1: Team;
   private team2: Team;
 
@@ -20,19 +16,14 @@ export default class TargetResolver {
     let result: Base[] = [];
     switch (t.type) {
       case 'all':
-        console.log('ALL');
         result = heroes;
         result = this.filters(result);
         break;
       case 'random':
-        console.log('RANDOM');
-
         result = heroes;
         shuffleArray(result);
         break;
       case 'default':
-        console.log('DEFAULT');
-
         result = this.sortResolver(t, heroes);
         result = this.filters(result);
     }
@@ -194,18 +185,21 @@ export default class TargetResolver {
   //       return TargetResolver.TeamsToHeroes([this.team2]);
   //     }
   //   }
-
+  private getByTeam(id: 1 | 2) {
+    if (id === 1) return this.team1;
+    else return this.team2;
+  }
   public getAllHeroes(id: 1 | 2) {
-    return this.BE.getTeam(id).getAllHero();
+    return this.getByTeam(id).getAllHero();
   }
   public getAllFront(id: 1 | 2) {
-    return this.BE.getTeam(id).getHeroesByLayout('front');
+    return this.getByTeam(id).getHeroesByLayout('front');
   }
   public getAllMid(id: 1 | 2) {
-    return this.BE.getTeam(id).getHeroesByLayout('mid');
+    return this.getByTeam(id).getHeroesByLayout('mid');
   }
   public getAllEnd(id: 1 | 2) {
-    return this.BE.getTeam(id).getHeroesByLayout('back');
+    return this.getByTeam(id).getHeroesByLayout('back');
   }
 
   static getAllFrontByTeam(team: Team): Base[] {

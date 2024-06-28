@@ -28,6 +28,7 @@ export default abstract class Base implements IHeroInstance {
     }
     return [];
   }
+  // public abstract onAttack(): IAction[];
   public abstract update(): IAction[];
   public abstract attack(): IAction[];
 }
